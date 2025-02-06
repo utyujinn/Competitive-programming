@@ -1,0 +1,94 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+
+int zeroone;
+int dfs(vector<vector<int>> &list,int n,int index){
+	if(n==0){
+		return zeroone ^ list[index][0];
+	}
+	else if(n==1){
+		int cnt = 0;
+		int sum = 0;
+		for(int i=0; i<3;i++){
+			sum+=list[index*3+i][n-1];
+		}
+		if(zeroone)cnt=2-sum;
+		else cnt=sum-1;
+		return cnt;
+	}
+	else{
+		int cnt = 0;
+		int sum = 0;
+		for(int i=0; i<3;i++){
+			sum+=list[index*3+i][n-1];
+		}
+		if(zeroone)cnt=2-sum;
+		else cnt=sum-1;
+
+		int min = 4;
+		int min2 = 4;
+		for(int i =0; i < 3; i++)if(list[index*3+i][n-1]!=zeroone){
+			int a = dfs(list, n-1, index*3+i);
+			if(min >= a){
+				min2 = min;
+				min = a;
+			}else if(min2 >= a){
+				min2 = a;
+			}
+		}
+		if(cnt == 2){
+			return min+min2;
+		}else if(cnt==1){
+			return min;
+		}else if(cnt==0){
+			return 0;
+		}
+	}
+}
+
+int main(){
+	int n;
+	cin >> n;
+	int N=1;
+	for(int i=0; i<n;i++){
+		N*=3;
+	}
+	vector<vector<int>> list(N,vector<int>(n+1,0));
+	for(int i=0;i<N;i++){
+		char a;
+		cin>>a;
+		list[i][0]=a-'0';
+	}
+	int sum;
+	for(int i=1;i<=n;i++){
+		for(int j=0;j<N/3;j++){
+			sum=0;
+			for(int k=0;k<3;k++){
+				sum+=list[j*3+k][i-1];
+			}
+			list[j][i]=(sum>=2)?1:0;
+		}
+		N/=3;
+	}
+	int cnt;
+	zeroone = !list[0][n];
+	if(zeroone)cnt=2-sum;
+	else cnt=sum-1;
+	int min = 4;
+	int min2 = 4;
+	for(int i =0; i < 3; i++)if(list[i][n-1]!=zeroone){
+		int a = dfs(list, n-1,i);
+		if(min >= a){
+			min2 = min;
+			min = a;
+		}else if(min2 >= a){
+			min2 = a;
+		}
+	}
+	if(cnt == 2){
+		cout << min+min2<< endl;
+	}else if(cnt==1){
+		cout << min << endl;
+	}
+}

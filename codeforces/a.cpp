@@ -1,0 +1,46 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+
+int main(){
+        int n,m;
+        string s,t;
+        cin >> n >> m >> s >> t;
+        char last = t[m-1];
+        sort(t.rbegin(), t.rend());
+        int index = 0;
+        int flag = 0;
+//      cout << t << endl;
+        for(int i = 0; i < m; i++){
+//              cout << index << " " << s <<" " << flag <<  endl;
+                if(index == n+1){
+                        break;
+                }
+                else if(index == n && !flag){
+                        if(t[i] > last)
+                                flag = 1;
+                        index++;
+                }
+                else if(s[index] < t[i]){
+                        s[index] = t[i];
+                        index++;
+                }
+                else{
+                        while(s[index] >= t[i]){
+                                index++;
+                        }
+                        if(index < n){
+                                s[index] = t[i];
+                                index++;
+                        }else if(index==n){
+                                if(t[i] > last)
+                                        flag = 1;
+                                index++;
+                        }
+                }
+        }
+        if(flag){
+                s[n-1] = last;
+        }
+        cout << s << endl;
+}

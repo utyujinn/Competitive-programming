@@ -1,0 +1,102 @@
+#include<iostream>
+#include<vector>
+#include<map>
+using namespace std;
+
+int main(){
+	int n,m;
+	cin >> n >> m;
+	map<int, vector<pair<int,int>>> hlist;
+	map<int, vector<pair<int,int>>> vlist;
+	for(int i =0; i < m; i++){
+		int x,y;
+		char color;
+		cin >> x >> y >> color;
+		int tmp;
+		if(color == 'B')tmp = 0;
+		else tmp = 1;
+		x--; y--;
+		hlist[x].emplace_back(y, tmp);
+		vlist[y].emplace_back(x, tmp);
+	}
+	vector<int> bmax(0),wmin(0);
+	int index = -1;
+	for(auto a: hlist){
+		bmax.push_back(-1);
+		wmin.push_back(n);
+		index ++;
+		for(auto cnt: a.second){
+			if(cnt.second == 0){
+				bmax[index] = max(bmax[index], cnt.first);
+			}else{
+				wmin[index] = min(wmin[index], cnt.first);
+			}
+		}
+		if(bmax[index] != -1 && wmin[index] != n && bmax[index] > wmin[index]){
+			cout << "No" << endl;
+			return 0;
+		}
+	}
+	int pbmax = bmax[0];
+	int pwmin = wmin[0];
+	for(int i = 1; i < bmax.size(); i++){
+		if(bmax[i] != -1){
+			if(bmax[i] > pbmax){
+				cout << "No" << endl;
+				return 0;
+			}
+		}
+		if(wmin[i] != n){
+			if(wmin[i] > pwmin){
+				cout << "No" << endl;
+				return 0;
+			}
+			pwmin = min(pwmin, wmin[i]);
+		}
+		if(bmax[i] != -1){
+			pbmax = max(pbmax, bmax[i]);
+		}
+	}
+
+
+	index = -1;
+	bmax.clear();
+	wmin.clear();
+	for(auto a: vlist){
+		bmax.push_back(-1);
+		wmin.push_back(n);
+		index ++;
+		for(auto cnt: a.second){
+			if(cnt.second == 0){
+				bmax[index] = max(bmax[index], cnt.first);
+			}else{
+				wmin[index] = min(wmin[index], cnt.first);
+			}
+		}
+		if(bmax[index] != -1 && wmin[index] != n && bmax[index] > wmin[index]){
+			cout << "No" << endl;
+			return 0;
+		}
+	}
+	pbmax = bmax[0];
+	pwmin = wmin[0];
+	for(int i = 1; i < bmax.size(); i++){
+		if(bmax[i] != -1){
+			if(bmax[i] > pbmax){
+				cout << "No" << endl;
+				return 0;
+			}
+		}
+		if(wmin[i] != n){
+			if(wmin[i] > pwmin){
+				cout << "No" << endl;
+				return 0;
+			}
+			pwmin = min(pwmin, wmin[i]);
+		}
+		if(bmax[i] != -1){
+			pbmax = max(pbmax, bmax[i]);
+		}
+	}
+	cout << "Yes" << endl;
+}

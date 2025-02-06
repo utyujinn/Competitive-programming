@@ -1,0 +1,92 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+
+void solve(){
+	int n;
+	cin >> n;
+	vector<int> list(n);
+	int a;
+	int x1=-1,x2 = -1, x3 = -1, x1i = 1e7, x2i = 1e7, x3i = 1e7,md1 = 1e7, md2 = 1e7, md3 = 1e7;
+	int c1,d1,c2,d2,c3,d3;
+	for(int i =0; i < n;i++){
+		cin >> list[i];
+	}
+	sort(list.begin(), list.end());
+	vector<int> diff(n-1);
+	int flag = 4;
+	for(int i = n-2; i >= 0; i--){
+		diff[i] = list[i+1]-list[i];
+		if(diff[i] == 0&&flag==4){
+			x1=list[i];
+			x1i = i;
+			flag --;
+			i--;
+		}else if(diff[i] == 0 && flag == 3){
+			x2 = list[i];
+			x2i = i;
+			flag --;
+			i--;
+		}else if(diff[i] == 0 && flag == 2){
+			x3 = list[i];
+			x3i = i;
+			flag --;
+			i--;
+		}
+	}
+	for(int i = n-2; i >= 0; i--){
+		if(x1i != 1e7 && (i > x1i+1 || i < x1i-1)){
+			if(md1 > diff[i]){
+				md1 = min(diff[i], md1);
+				c1 = list[i], d1 = list[i+1];
+			}
+		}
+		if(x1i != 1e7 && (i > x2i+1 || i < x2i-1)){
+			if(md2 > diff[i]){
+				md2 = min(diff[i], md2);
+				c2 = list[i], d2 = list[i+1];
+			}
+		}
+		if(x1i != 1e7 && (i > x3i+1 || i < x3i-1)){
+			if(md3 > diff[i]){
+				md3 = min(diff[i], md3);
+				c3 = list[i], d3 = list[i+1];
+			}
+		}
+	}
+	if(x1i+2 < n)
+		if(md1 > list[x1i+2] - list[x1i-1]){
+			md1 = min(md1, list[x1i+2]-list[x1i-1]);
+			c1 = list[x1i-1], d1 = list[x1i+2];
+		}
+	if(x2i+2 < n)
+		if(md2 > list[x2i+2] - list[x2i-1]){
+			md2 = min(md2, list[x2i+2]-list[x2i-1]);
+			c2 = list[x2i-1], d2 = list[x2i+2];
+		}
+	if(x3i+2 < n)
+		if(md3 > list[x3i+2] - list[x3i-1]){
+			md3 = min(md3, list[x3i+2]-list[x3i-1]);
+			c3 = list[x3i-1], d3 = list[x3i+2];
+		}
+
+	if(md1 < 2*x1){
+		cout << c1 << " " << d1 << " " << x1 << " " << x1 << endl;
+	}
+	else if(md2 < 2*x2){
+		cout << c2 << " " << d2 << " " << x2 << " " << x2 << endl;
+	}
+	else if(md3 < 2*x3){
+		cout << c3 << " " << d3 << " " << x3 << " " << x3 << endl;
+	}
+	else{
+		cout << -1 << endl;
+	}
+}
+
+int main(){
+	int t;
+	cin >> t;
+	for(;t--;)solve();
+}

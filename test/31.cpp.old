@@ -1,0 +1,205 @@
+#include<bits/stdc++.h>
+#define rep(i, n) for(int i = 0; i < (n); i++)
+#define per(i, n) for(int i = (n) - 1; i >= 0; i--)
+using ll = long long;
+#define vi vector<int>
+#define vvi vector<vi>
+#define vl vector<ll>
+#define vvl vector<vl>
+#define pii pair<int,int>
+#define all(a) (a).begin(), (a).end()
+#define rall(a) (a).rbegin(), (a).rend()
+using namespace std;
+template<class T, class U>
+bool chmax(T &a, const U &b){ return a < b ? (a = b, 1) : 0; }
+template<class T, class U>
+bool chmin(T &a, const U &b){ return a > b ? (a = b, 1) : 0; }
+const ll inf=1LL<<60;
+
+vvl seen;
+ll h,w;
+vvl c;
+int ans = 0;
+
+vector<pii> even_list = {
+    {-1,0},{-1,1},{0,1},{1,1},{1,0},{0,-1},{-1,0}
+};
+vector<pii> odd_list = {
+    {-1,-1},{-1,0},{0,1},{1,0},{1,-1},{0,-1},{-1,-1}
+};
+
+
+void outer_white_wfs(pair<int,int> g){
+    queue<pair<int,int>> q;
+    q.push(g);
+    while(!q.empty()){
+        pii cg = q.front();
+        q.pop();
+        vector<pii> list = (cg.first%2==0) ? even_list : odd_list;
+        for(pii a: list){
+            pii ng = {a.first+cg.first,a.second+cg.second};
+            if(ng.first >= 0 && ng.first < h && ng.second >= 0 && ng.second < w){
+                if(seen[ng.first][ng.second]==0){
+                    if(c[ng.first][ng.second]==0){
+                        seen[ng.first][ng.second]=1;
+                        q.push(ng);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void black_wfs(pair<int,int> g){
+    queue<pair<int,int>> q;
+    q.push(g);
+    while(!q.empty()){
+        pii cg = q.front();
+        q.pop();
+        int cnt = 0;
+        vector<pii> list = (cg.first%2==0) ? even_list : odd_list;
+        for(pii a: list){
+            pii ng = {a.first+cg.first,a.second+cg.second};
+            if(ng.first >= 0 && ng.first < h && ng.second >= 0 && ng.second < w){
+                if(c[ng.first][ng.second]==1){
+                    cnt++;
+                    if(seen[ng.first][ng.second]==0){
+                        if(cnt >= 2)ans-=2;
+                        ans += 6;
+                        seen[ng.first][ng.second]=1;
+                        q.push(ng);
+                        ans-=2;
+                        //cout <<  ng.first << ' ' << ng.second<< ' ' << ans << endl;
+                        
+                        int ai = -100;
+                        int i = 0;
+                        int j = 0;
+                        vector<pii> list2 = (ng.first%2==0) ? even_list : odd_list;
+                        list2.insert(list2.end(),list2.begin(),list2.end());
+                        for(pii b: list2){
+                            //cout << b.first << " " << b.second << endl;
+                            b = {b.first + ng.first,b.second+ng.second};
+                            //cout << b.first << " " << b.second << endl;
+                            //cout << endl;
+                            if(cg == b){
+                                ai = i;
+                            }
+                            if(i-ai >=2 && i-ai < 5){
+                                if(b.first >= 0 && b.first < h && b.second >= 0 && b.second < w)
+                                    if(seen[b.first][b.second] == 1 && c[b.first][b.second] == 1){
+                                        ans-=2;
+                                    }
+                                j++;
+                                if(j >= 3){
+                                    break;
+                                }
+                            }
+                            i++;
+                        } 
+                    }
+                }
+                else cnt = 0;
+            }
+            else cnt = 0;
+        }
+    }
+}
+
+void white_wfs(pair<int,int> g){
+    queue<pair<int,int>> q;
+    q.push(g);
+    while(!q.empty()){
+        pii cg = q.front();
+        q.pop();
+        int cnt = 0;
+        vector<pii> list = (cg.first%2==0) ? even_list : odd_list;
+        for(pii a: list){
+            pii ng = {a.first+cg.first,a.second+cg.second};
+            if(ng.first >= 0 && ng.first < h && ng.second >= 0 && ng.second < w){
+                if(c[ng.first][ng.second]==0){
+                    cnt++;
+                    if(seen[ng.first][ng.second]==0){
+                        if(cnt >= 2)ans-=2;
+                        seen[ng.first][ng.second]=1;
+                        q.push(ng);
+                        ans-=4;
+                        int ai = 0;
+                        int i = 0;
+                        int j = 0;
+                        vector<pii> list2 = list;
+                        list2.insert(list2.end(),list.begin(),list.end());
+                        for(pii b: list2){
+                            b = {b.first + ng.first,b.second+ng.second};
+                            if(cg == b){
+                                ai = i;
+                            }
+                            if(i-ai >=2 && i-ai < 5){
+                                if(b.first >= 0 && b.first < h && b.second >= 0 && b.second < w)
+                                    if(seen[b.first][b.second] == 1 && c[b.first][b.second] == 0)
+                                        ans+=2;
+                                j++;
+                                if(j >= 3)break;
+                            }
+                            i++;
+                        }
+                    }
+                }
+                else{
+                    cnt = 0;
+                }
+            }
+            else{
+                cnt = 0;
+            }
+        }
+    }
+}
+
+void print_list(){
+    rep(i,h){rep(j,w){
+        cout << seen[i][j];
+    }
+    cout << endl;
+}}
+
+int main(void){
+    cin >> w >> h;
+    seen.resize(h,vl(w,0));
+    c.resize(h,vl(w));
+    rep(i,h)rep(j,w)cin >> c[i][j];
+    rep(i,h)rep(j,2){
+        if(seen[i][(w-1)*j] || c[i][(w-1)*j] == 0){
+            seen[i][(w-1)*j] = 1;
+            outer_white_wfs({i,j*(w-1)});
+        }
+    }
+    
+    rep(i,2)rep(j,w){
+        if(seen[i*(h-1)][j] || c[i*(h-1)][j] == 0){
+            seen[i*(h-1)][j] = 1;
+            outer_white_wfs({i*(h-1),j});
+        }
+    }
+    
+    rep(i,h)rep(j,w){
+        if(!seen[i][j]){
+            seen[i][j] = 1;
+            if(c[i][j]){
+                ans += 6;
+                //cout << ans << endl;
+                black_wfs({i,j});
+                //cout << "black" << endl;
+                //print_list();
+            }
+            else{
+                ans -= 6;
+                //cout << ans << endl;
+                white_wfs({i,j});
+                //cout << "white" << endl;
+                //print_list();
+            }
+        }
+    }
+    cout << ans << endl;
+    return 0;
+}

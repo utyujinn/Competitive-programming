@@ -1,0 +1,41 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+int n;
+
+void print(vector<int> &c){
+	for(int i= 0; i < n; i++){
+		cout << c[i] << " ";
+	}
+	cout << endl;
+}
+
+int main(){
+	cin >> n;
+	vector<int> c(n);
+//	print(c);
+	for(int i = 0;i < n;i++){
+		int a;
+		cin >> a;
+		if(!(i%2==1)){
+			c[i] = a;
+		}
+		else{
+			if(c[i-1] == a){
+				c[i] = a;
+			}
+			else{
+				for(int j = i-1; c[j] != a && j >= 0; j--){
+					c[j] = a;
+				}
+				c[i] = a;
+			}
+		}
+//		print(c);
+	}
+	int ans = 0;
+	for(int i = 0; i < n; i++){
+		if(!c[i])ans++;
+	}
+	cout << ans << endl;
+}

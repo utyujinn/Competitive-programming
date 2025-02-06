@@ -1,0 +1,154 @@
+#include<bits/stdc++.h>
+#define rep(i, n) for(int i = 0; i < (n); i++)
+#define per(i, n) for(int i = (n) - 1; i >= 0; i--)
+using ll = long long;
+#define vi vector<int>
+#define vvi vector<vi>
+#define vl vector<ll>
+#define vvl vector<vl>
+using namespace std;
+template<class T, class U>
+bool chmax(T &a, const U &b){ return a < b ? (a = b, 1) : 0; }
+template<class T, class U>
+bool chmin(T &a, const U &b){ return a > b ? (a = b, 1) : 0; }
+const int inf=1<<29;
+
+int main(){
+    ll v,e;
+    cin >> v >> e;
+    vvi dist(v,vi(v,inf));
+    while(e--){
+        int s,t,d;
+        cin >> s >> t >> d;
+        dist[s][t] = d;
+    }
+    vvi dp(1<<v,vi(v,inf));
+    rep(i,v)dp[0][i] = 0;
+
+    for(int i = 1; i < 1<<v;i++){
+        rep(j,v){
+            if((((1<<j) & i))!=0){
+                rep(k,v){
+                    chmin(dp[i][j],dp[i^(1<<j)][k] + dist[k][j] );
+                }
+            }
+        }
+    }
+    int ans = inf;
+    rep(i,v){
+        chmin(ans,dp[(1<<v)-1][i]);
+    }
+    if(ans == inf)ans = -1;
+    cout << ans << endl;
+}
+
+/*
+int main(){
+    ll v,e;
+    cin >> v >> e;
+    vvi dist(v,vi(v,inf));
+    while(e--){
+        int s,t,d;
+        cin >> s >> t >> d;
+        dist[s][t] = d;
+    }
+    vvi dp(1<<v,vi(v,inf));
+    rep(i,v)dp[0][i] = 0;
+    rep(i,v)dp[1<<i][i] = 0;
+    for(int i = 1; i < 1<<v;i++){
+        rep(j,v){
+            if((((1<<j) & i))!=0){
+                rep(k,v){
+                    chmin(dp[i][j],dp[i^(1<<j)][k] + dist[k][j] );
+                }
+            }
+        }
+    }
+    int ans = inf;
+    rep(i,v){
+        chmin(ans,dp[(1<<v)-1][i]);
+    }
+    if(ans == inf)ans = -1;
+    cout << ans << endl;
+}
+/*
+int main(){
+    int n,m;
+    cin >> n >> m;
+    vvi cost(n,vi(n,inf));
+    while(m--){
+        int a,b,c;
+        cin >> a >> b >> c;
+        cost[a][b] = c; 
+    }
+    vvi dp(1<<n,vi(n,inf));
+    dp[(1<<n)-1][0]=0;
+    for(int i =(1<<n)-2;i>=0;i--){
+        rep(j,n){
+            rep(k,n){
+                if((i&(1<<k))==0){
+                    dp[i][j]=min(dp[i][j],dp[i|1<<k][k]+cost[j][k]);
+                }
+            }
+        }
+    }
+    if(dp[0][0]!=inf)cout<<dp[0][0]<<endl;
+    else cout << -1 << endl;
+    //
+    //2 0
+}
+
+/*
+vvi dp;
+vvi dist;
+int n,e;
+
+int rec(int bit, int v){
+    cout << endl;
+    rep(i,n){
+        cout << (bit/(1<<i))%2;
+    }
+    cout<< " " << v << endl;
+
+    if(dp[bit][v] != -1) return dp[bit][v];
+
+    int res = 1<<30;
+
+    int prev_bit = bit & ~(1<<v);
+
+    rep(u,n){
+        //cout << u << endl;
+        if(!(prev_bit & (1<<u))) continue; //すでに集合に含まれている
+        if(dist[u][v] == -1)continue; //道が通っていない
+        int prev = rec(prev_bit, u);
+        if(prev== -1)continue; //前集合で既に道が通っていなかった
+        if(res > prev + dist[u][v]){
+            res = prev + dist[u][v];
+        }
+    }
+    cout << res << endl;
+    if(res==1<<30)return -1;
+    return dp[bit][v] = res;
+}
+
+int main(void){
+    cin >> n >> e;
+    int s,t,d;
+    dist.resize(n,vi(n,-1));
+    rep(i,e){
+        cin >> s >> t>> d;
+        dist[s][t] = d;
+    }
+    dp.resize(1<<n,vi(n,-1));
+    rep(i,n)dp[1<<i][i]=0;
+    int res = 1<<30;
+    rep(u,n){
+        int tmp = rec((1<<n)-1,u);
+        if(res > tmp){
+            res = tmp;
+        }
+    }
+    cout << res << endl;
+    return 0;
+}
+*/

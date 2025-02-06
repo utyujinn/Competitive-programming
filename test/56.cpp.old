@@ -1,0 +1,54 @@
+#include<bits/stdc++.h>
+#define rep(i, n) for(int i = 0; i < (n); i++)
+#define per(i, n) for(int i = (n) - 1; i >= 0; i--)
+using ll = long long;
+#define vi vector<int>
+#define vvi vector<vi>
+#define vl vector<ll>
+#define vvl vector<vl>
+using namespace std;
+template<class T, class U>
+bool chmax(T &a, const U &b){ return a < b ? (a = b, 1) : 0; }
+template<class T, class U>
+bool chmin(T &a, const U &b){ return a > b ? (a = b, 1) : 0; }
+const ll inf=1LL<<60;
+
+struct Edge{
+    ll to;
+    ll dist;
+};
+
+int main(void){
+    ll n,e,s;
+    cin >> n >> e >> s;
+    vector<vector<Edge>> G(n);
+    rep(i,e){
+        ll s,t,d;
+        cin >> s >> t >> d;
+        G[s].push_back({t,d});
+    }
+    priority_queue<pair<ll,ll>,vector<pair<ll,ll>>,greater<pair<ll,ll>>> que;
+    vl dist(n,inf);
+    que.emplace(dist[s]=0,s);
+
+    while(!que.empty()){
+        pair<ll,ll> q=que.top();
+        que.pop();
+        ll d = q.first;
+        ll v = q.second;
+
+        if(d>dist[v]) continue;
+
+        for(Edge edge: G[v]){
+            ll nextdist = d+edge.dist;
+            if(nextdist<dist[edge.to]){
+                que.emplace(dist[edge.to]=nextdist,edge.to);
+            }
+        }
+    }
+    rep(i,n){
+        if(dist[i]==inf)cout << "INF" << endl;
+        else cout << dist[i] << endl;
+    }
+    return 0;
+}

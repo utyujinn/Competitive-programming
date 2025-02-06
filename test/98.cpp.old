@@ -1,0 +1,32 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+
+int main(){
+	long n;
+	cin >> n;
+	vector<long> a(n);
+	vector<long> list(n);
+	long ans = 1;
+	for(int i = 0; i < n; i++){
+		cin >> a[i];
+		list[a[i]]++;
+		if(a[i] != 0)
+		if(list[a[i]] > list[a[i]-1] || list[a[i]] > 3){
+			cout << 0 << endl;
+			return 0;
+		}
+		if(list[a[i]] == 1){
+			if(a[i] == 0)ans=(3*ans)%1000000007;
+			else if(list[a[i]-1] == 3)ans=(3*ans)%1000000007;
+			else if(list[a[i]-1] == 2)ans=(2*ans)%1000000007;
+		}
+		if(list[a[i]] == 2){
+			if(a[i] == 0)ans=(2*ans)%1000000007;
+			else if(list[a[i]-1] == 3)ans=(2*ans)%1000000007;
+		}
+		if(list[a[i]] == 3){
+		}
+	}
+	cout << ans << endl;
+}
