@@ -1,50 +1,47 @@
-#include<iostream>
-#include<vector>
-#include<algorithm>
+#include <iostream>
+
 using namespace std;
 
-int main(){
-	int n;
-	cin >> n;
-	vector<long> x,y;
-	vector<int> x1(n),y1(n),x2(n),y2(n);
-	for(int i = 0; i < n; i++){
-		cin >> x1[i] >> y1[i] >> x2[i] >> y2[i];
-		x.push_back(x1[i]);
-		x.push_back(x2[i]);
-		y.push_back(y1[i]);
-		y.push_back(y2[i]);
-	}
-	sort(x.begin(), x.end());
-	sort(y.begin(), y.end());
-	vector<vector<int>> list(2*n, vector<int>(2*n));
-	for(int i = 0; i < n; i++){
-		x1[i] = lower_bound(x.begin(), x.end(), x1[i]) - x.begin();
-		x2[i] = lower_bound(x.begin(), x.end(), x2[i]) - x.begin();
-		y1[i] = lower_bound(y.begin(), y.end(), y1[i]) - y.begin();
-		y2[i] = lower_bound(y.begin(), y.end(), y2[i]) - y.begin();
-		list[x1[i]][y1[i]]++;
-		list[x2[i]][y2[i]]++;
-		list[x2[i]][y1[i]]--;
-		list[x1[i]][y2[i]]--;
-	}
-	for(int i = 0; i < 2*n; i++){
-		for(int j = 1; j < 2*n; j++){
-			list[i][j] += list[i][j-1];
-		}
-	}
-	for(int i = 0; i < 2*n; i++){
-		for(int j = 1; j < 2*n; j++){
-			list[j][i] += list[j-1][i];
-		}
-	}
-	long ans = 0;
-	for(int i = 0; i < 2*n; i++){
-		for(int j = 0; j < 2*n; j++){
-			if(list[i][j]){
-				ans += (x[i+1]-x[i])*(y[j+1]-y[j]);
-			}
-		}
-	}
-	cout << ans << endl;
+#define rep(i,n) for(int i=0; i<(int)(n); i++)
+
+typedef unsigned int uint;
+
+int K, M;
+uint a[100], c[100][100], x[100][100], ans;
+
+void mul(uint u[][100], uint v[][100]){
+	uint t[K][K];
+	fill(t[0], t[K], 0);
+	rep(i,K) rep(j,K) rep(k,K) t[i][j] ^= u[i][k] & v[k][j];
+	rep(i,K) rep(j,K) u[i][j] = t[i][j];
 }
+
+void print(uint u[][100]){
+	cout << endl;
+	for(int i=0;i<K;i++){
+		for(int j=0;j<K;j++){
+			cout<<c[i][j]<< " "; 
+		}
+		cout<<endl;
+	}
+}
+
+int main(){
+	cin >> K >> M;
+	rep(i,K) cin >> a[i];
+	rep(i,K) cin >> c[0][i];
+	rep(i,K-1) c[i+1][i]--;
+	
+	rep(i,K) x[i][i]--;
+	print(c);
+	for(int n=M-1; n; n/=2){
+		if(n%2) mul(x,c);
+		mul(c,c);
+		print(c);
+	}
+	
+	rep(i,K) ans ^= x[K-1][i] & a[K-1-i];
+	cout << ans << endl;
+	return 0;
+}
+
