@@ -49,8 +49,23 @@ int main(){
 	cin>>N;
 	vector<int> P(N);
 	for(int i=0;i<N;i++){
-		cin>>P[i];P[i]--;
+		cin>>P[i];
 	}
 	BIT bit(N);
+	bit.add_range(0,N,1);
+	vector<int> ans(N);
 	reverse(P.begin(),P.end());
+	for(int i=0;i<N;i++){
+		int ok=N,ng=-1;
+		while(ok-ng>1){
+			int mid=(ok+ng)/2;
+			if(bit.sum(mid)>=P[i])ok=mid;
+			else ng=mid;
+		}
+		ans[ok]=N-i-1;
+		bit.add(ok,-1);
+	}
+	for(int i=0;i<N;i++){
+		cout<<ans[i]+1<<(i==N-1?"\n":" ");
+	}
 }

@@ -76,18 +76,11 @@ vector<long> convolution(vector<long> A,vector<long> B){
 }
 
 int main(){
-	int N;
-	cin>>N;
-	vector<long> S(N);
-	vector<long> list(1e6+1);
-	for(int i=0;i<N;i++){
-		cin>>S[i];
-		list[S[i]]++;
-	}
-	auto C=convolution(list,list);
-	long ans=0;
-	for(int i=0;i<N;i++){
-		ans+=C[S[i]*2]/2;
-	}
-	cout<<ans<<endl;
+	int N,M;
+	cin>>N>>M;
+	vector<long> A(N+M-1),B(N+M-1);
+	for(int i=0;i<N;i++)cin>>A[i];
+	for(int i=0;i<M;i++)cin>>B[i];
+	auto C=convolution(A,B);
+	for(int i=0;i<N+M-1;i++)cout<<C[i]<<(i==N+M-2?"\n":" ");
 }

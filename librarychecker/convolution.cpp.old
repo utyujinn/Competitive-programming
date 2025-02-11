@@ -1,0 +1,56 @@
+#include<iostream>
+#include<vector>
+#include<cmath>
+#include<complex>
+using namespace std;
+
+vector<complex<double>> FFT(vector<complex<double>> A, int inv){
+	const int N=A.size();
+	if(N==1)return A;
+	vector<complex<double>> even(N/2),odd(N/2);
+	for(int i=0;i<N/2;i++){
+		even[i]=A[i*2];
+		odd[i]=A[i*2+1];
+	}
+	even=FFT(even,inv);
+	odd=FFT(odd,inv);
+	for(int i=0;i<N/2;i++){
+		odd[i]*=polar(1.0, inv*2*M_PI*i/N);
+		A[i]=even[i]+odd[i];
+		A[N/2+i]=even[i]-odd[i];
+	}
+	return A;
+}
+
+vector<long> convolution(vector<complex<double>> A,vector<complex<double>> B){
+	int IN=A.size()+B.size()+1;
+	int a=1;
+	while(a<=IN){
+		a*=2;
+	}
+	int N=a;
+	A.resize(N);
+	B.resize(N);
+	vector<complex<double>> DA=FFT(A,1);
+	vector<complex<double>> DB=FFT(B,1);
+	vector<complex<double>> DC(N);
+	for(int i=0;i<N;i++)DC[i]=DA[i]*DB[i];
+	vector<complex<double>> C=FFT(DC,-1);
+	vector<long> CL(IN);
+	for(int i=0;i<IN;i++)CL[i]=round((C[i]/double(N)).real());
+	return CL;
+}
+
+int main(){
+	int N,M;
+	cin>>N>>M;
+	vector<complex<double>> A(N+M-1),B(N+M-1);
+	for(int i=0;i<N;i++){
+		double s;cin>>s;A[i]=complex<double>(s,0);
+	}
+	for(int i=0;i<M;i++){
+		double s;cin>>s;B[i]=complex<double>(s,0);
+	}
+	auto C=convolution(A,B);
+	for(int i=0;i<N+M-1;i++)cout<<C[i]%998244353<<(i==N+M-2?"\n":" ");
+}
