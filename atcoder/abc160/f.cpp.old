@@ -1,0 +1,173 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+int N;
+vector<int> G[2<<17];
+vector<pair<int,int>> dp[2<<17];
+
+template<int mod>
+struct ModInt{
+	int val;
+	ModInt():val(0){}
+	ModInt(long long x):val(x>=0?x%mod:(mod-(-x)%mod)%mod){}
+	ModInt &operator+=(const ModInt &p){
+		if((val+=p.val)>=mod){
+			val-=mod;
+		}
+		return *this;
+	}
+	ModInt &operator-=(const ModInt &p){
+		if((val+=mod-p.val)>=mod){
+			val-=mod;
+		}
+		return *this;
+	}
+	ModInt &operator*=(const ModInt &p){
+		val=(int)(1LL*val*p.val%mod);
+		return *this;
+	}
+	ModInt &operator/=(const ModInt &p){
+		*this *= p.inverse();
+		return *this;
+	}
+	ModInt operator-() const { return ModInt(-val);}
+	ModInt operator+(const ModInt &p) const{return ModInt(*this)+=p;}
+	ModInt operator*(const ModInt &p) const{return ModInt(*this)*=p;}
+	ModInt operator/(const ModInt &p) const{return ModInt(*this)/=p;}
+	bool operator==(const ModInt &p)const{return val==p.val;}
+	bool operator!=(const ModInt &p)const{return val!=p.val;}
+	ModInt inverse() const{
+		int a=val, b=mod, u=1,v=0,t;
+		while(b>0){
+			t=a/b;
+			swap(a-=t*b,b);
+			swap(u-=t*v,v);
+		}
+		return ModInt(u);
+	}
+	ModInt pow(long long n)const{
+		ModInt ret(1), mul(val);
+		while(n>0){
+			if(n&1)ret*=mul;
+			mul*=mul;
+			n>>=1;
+		}
+		return ret;
+	}
+	friend ostream &operator<<(ostream &os, const ModInt &p) {return os<<p.val;}
+	friend istream &operator>>(istream &is, ModInt &a){
+		long long t;
+		is>>t;
+		a=ModInt<mod>(t);
+		return (is);
+	}
+	int get_mod(){return mod;}
+};
+const int MOD = 1000000007;
+using modint = ModInt<MOD>;
+
+template<class T>
+struct Comb {
+	vector<T> fact_, fact_inv_, inv_;
+	Comb(int SIZE):fact_(SIZE, 1), fact_inv_(SIZE,1), inv_(SIZE, 1) {init(SIZE);}
+	void init(int SIZE){
+		fact_.assign(SIZE, 1), fact_inv_.assign(SIZE,1), inv_.assign(SIZE, 1);
+		int mod=fact_[0].get_mod();
+		for(int i=2;i<SIZE;i++){
+			fact_[i]=fact_[i-1]*i;
+			inv_[i]=-inv_[mod%i]*(mod/i);
+			fact_inv_[i]=fact_inv_[i-1]*inv_[i];
+		}
+	}
+	T nCk(int n, int k){
+		return fact_[n]*fact_inv_[k]*fact_inv_[n-k];
+	}
+	T nHk(int n, int k){
+		return nCk(n+k-1,k);
+	}
+	T fact(int n){
+		return fact_[n];
+	}
+	T fact_iinv(int n){
+		return fact_inv_[n];
+	}
+	T inv(int n){
+		return inv_[n];
+	}
+};
+Comb<modint> comb(2<<17);
+
+pair<int,int> dfs(int v,int p){
+	int s=G[v].size();
+	dp[v].assign(s,make_pair(-1,0));
+	modint ret=1;
+	int node=0;
+	for(int i=0;i<s;i++){
+		int to=G[v][i];
+		if(to!=p){
+			dp[v][i]=dfs(to,v);
+			if(node==0){
+				ret*=dp[v][i].first;
+			}else{
+				ret*=dp[v][i].first;
+				ret=ret*comb.nCk(node+dp[v][i].second,dp[v][i].second);
+			}
+			cout<<ret<<endl;
+			node+=dp[v][i].second;
+		}
+	}
+	return make_pair(ret.val,node+1);
+}
+
+void wfs(int v,pair<int,int> pval, int p){
+	int s=G[v].size();
+	for(int i=0;i<s;i++){
+		int to=G[v][i];
+		if(to==p){
+			dp[v][i]=pval;
+		}
+	}
+	vector<pair<int,int>> left(s,make_pair(1,0)),right(s,make_pair(1,0));
+	left[1]=dp[v][0];
+	right[1]=dp[v][s-1];
+	for(int i=2;i<s;i++){
+		left[i].first=left[i-1].first*comb.nCk(dp[v][i].second+left[i-1].second,dp[v][i].second).val%MOD*dp[v][i].first%MOD;
+		right[i].first=right[i-1].first*comb.nCk(dp[v][i].second+right[i-1].second,dp[v][i].second).val%MOD*dp[v][i].first%MOD;
+	}
+	for(int i=0;i<s;i++){
+		int to=G[v][i];
+		if(to!=p){
+			wfs(to,make_pair(left[i].first*right[s-i-1].first%MOD*comb.nCk(left[i].second+right[s-i-1].second,left[i].second).val%MOD,left[i].second+right[s-i-1].second),v);
+		}
+	}
+}
+
+int main(){
+	cin>>N;
+	for(int i=0;i<N-1;i++){
+		int a,b;
+		cin>>a>>b;
+		a--,b--;
+		G[a].push_back(b);
+		G[b].push_back(a);
+	}
+	dfs(0,-1);
+	for(int i=0;i<N;i++){
+		cout<<i<<":";
+		for(int j=0;j<dp[i].size();j++){
+			cout<<dp[i][j].first<<" "<<dp[i][j].second<<" ";
+		}
+		cout<<endl;
+	}
+	wfs(0,make_pair(1,0),-1);
+	for(int i=0;i<N;i++){
+		int ret=1;
+		int node=0;
+		for(int j=0;j<G[i].size();j++){
+			ret=ret*dp[i][j].first%MOD;
+			ret=ret*comb.nCk(dp[i][j].second+node,dp[i][j].second).val%MOD;
+			node+=dp[i][j].second;
+		}
+		cout<<ret<<endl;
+	}
+}

@@ -1,21 +1,25 @@
-#include<bits/stdc++.h>
+#include<iostream>
+#include<set>
 using namespace std;
-#define rep(i, n) for(int i = 0; i < (n); i++)
-#define per(i, n) for(int i = (n) - 1; i >= 0; i--)
-using ll = long long;
-#define vi vector<int>
-#define vvi vector<vi>
-#define vl vector<ll>
-#define vvl vector<vl>
-#define all(a) (a).begin(), (a).end()
-#define rall(a) (a).rbegin(), (a).rend()
-template<class T, class U>
-bool chmax(T &a, const U &b){ return a < b ? (a = b, 1) : 0; }
-template<class T, class U>
-bool chmin(T &a, const U &b){ return a > b ? (a = b, 1) : 0; }
-const ll inf=1LL<<60;
-
-int main(void){
-    
-    return 0;
+int d[9][2]={{0,0},{1,2},{2,1},{1,-2},{2,-1},{-1,2},{-2,1},{-2,-1},{-1,-2}};
+int main(){
+	long N,M;
+	cin>>N>>M;
+	set<pair<int,int>> list;
+	long ans=N*N;
+	for(;M--;){
+		int a,b;
+		cin>>a>>b;
+		a--,b--;
+		for(int i=0;i<9;i++){
+			if(a+d[i][0]>=0&&a+d[i][0]<N&&b+d[i][1]>=0&&b+d[i][1]<N){
+				auto tmp=make_pair(a+d[i][0],b+d[i][1]);
+				if(!list.count(tmp)){
+					ans--;
+					list.insert(tmp);
+				}
+			}
+		}
+	}
+	cout<<ans<<endl;
 }

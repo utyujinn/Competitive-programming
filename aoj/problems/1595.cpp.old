@@ -1,0 +1,46 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+using namespace std;
+
+vector<int> G[1<<17];
+int dp[1<<17];
+int ans[1<<17];
+
+void dfs(int idx,int par){
+	for(auto &n:G[idx])if(n!=par){
+		dfs(n,idx);
+		dp[idx]=max(dp[idx],dp[n]+1);
+	}
+}
+
+void dfs2(int idx,int d_par,int par){
+	vector<pair<int,int>> d_child;
+	d_child.emplace_back(0,-1);
+	for(auto &n:G[idx]){
+		if(n==par)d_child.emplace_back(d_par+1,n);
+		else d_child.emplace_back(dp[n]+1,n);
+	}
+	sort(d_child.rbegin(),d_child.rend());
+	ans[idx]=d_child[0].first;
+	for(int &n:G[idx])if(n!=par){
+		dfs2(n, d_child[d_child[0].second==n].first, idx);
+	}
+}
+
+int main(){
+	int N;
+	cin>>N;
+	for(int i=0;i<N-1;i++){
+		int u,v;
+		cin>>u>>v;
+		u--,v--;
+		G[u].push_back(v);
+		G[v].push_back(u);
+	}
+	dfs(0,-1);
+	dfs2(0,0,-1);
+	for(int i=0;i<N;i++){
+		cout<<(N-1)*2-ans[i]<<endl;
+	}
+}	
