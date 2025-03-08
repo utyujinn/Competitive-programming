@@ -1,26 +1,30 @@
 #include<iostream>
-#include<vector>
+#include<algorithm>
 using namespace std;
+int N,K;
+long A[2<<17];
+long ans;
+
+void dfs(long cnt,int prev,int left){
+	if(left==0){
+		ans=max(ans,cnt);
+	}else{
+		for(int i=prev+1;i<N;i++){
+			cnt^=A[i];
+			dfs(cnt,i,left-1);
+			cnt^=A[i];
+		}
+	}
+}
 
 int main(){
-	int n,k;
-	cin >> n >> k;
-	vector<long> a(n);
-	long sum = 0;
-	for(int i = 0; i < n; i++){
-		cin >> a[i];
-		sum ^= a[i];
+	cin>>N>>K;
+	for(int i=0;i<N;i++)cin>>A[i];
+	long cnt=0;
+	if(K>N/2){
+		K=N-K;
+		for(int i=0;i<N;i++)cnt^=A[i];
 	}
-	long ans = 0;
-	if(k<n-k){
-		long tmp = 0;
-		tmp ^= a[i];
-
-		ans = max(tmp, ans);
-	}
-	else{
-
-		ans = max(tmp, ans);
-	}
-	cout << ans << endl;
+	dfs(cnt,-1,K);
+	cout<<ans<<endl;
 }

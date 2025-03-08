@@ -1,20 +1,49 @@
-#include<bits/stdc++.h>
-#define rep(i, n) for(int i = 0; i < (n); i++)
-#define per(i, n) for(int i = (n) - 1; i >= 0; i--)
-using ll = long long;
-#define vi vector<int>
-#define vvi vector<vi>
-#define vl vector<ll>
-#define vvl vector<vl>
-#define all(a) (a).begin(), (a).end()
-#define rall(a) (a).rbegin(), (a).rend()
+#include<iostream>
 using namespace std;
-template<class T, class U>
-bool chmax(T &a, const U &b){ return a < b ? (a = b, 1) : 0; }
-template<class T, class U>
-bool chmin(T &a, const U &b){ return a > b ? (a = b, 1) : 0; }
-const ll inf=1LL<<60;
+int dp[101][501][501];
+int N;
+int A[100],B[100];
 
-int main(void){
-  return 0;
+int main(){
+	cin>>N;
+	int sum=0;
+	for(int i=0;i<N;i++){
+		cin>>A[i]>>B[i];
+		sum+=B[i];
+	}
+	if(sum%3!=0){
+		cout<<-1<<endl;
+		return 0;
+	}
+	sum/=3;
+	for(int i=0;i<=N;i++)for(int j=0;j<=sum;j++)for(int k=0;k<=sum;k++)
+		dp[i][j][k]=1500;
+	dp[0][0][0]=0;
+	for(int i=0;i<N;i++){
+		for(int j=0;j<=sum;j++){
+			for(int k=0;k<=sum;k++){
+				if(A[i]==1){
+					if(j+B[i]<=sum)
+						dp[i+1][j+B[i]][k]=min(dp[i+1][j+B[i]][k],dp[i][j][k]);
+					if(k+B[i]<=sum)
+						dp[i+1][j][k+B[i]]=min(dp[i+1][j][k+B[i]],dp[i][j][k]+1);
+					dp[i+1][j][k]=min(dp[i+1][j][k],dp[i][j][k]+1);
+				}else if(A[i]==2){
+					if(j+B[i]<=sum)
+						dp[i+1][j+B[i]][k]=min(dp[i+1][j+B[i]][k],dp[i][j][k]+1);
+					if(k+B[i]<=sum)
+						dp[i+1][j][k+B[i]]=min(dp[i+1][j][k+B[i]],dp[i][j][k]);
+					dp[i+1][j][k]=min(dp[i+1][j][k],dp[i][j][k]+1);
+				}else{
+					if(j+B[i]<=sum)
+						dp[i+1][j+B[i]][k]=min(dp[i+1][j+B[i]][k],dp[i][j][k]+1);
+					if(k+B[i]<=sum)
+						dp[i+1][j][k+B[i]]=min(dp[i+1][j][k+B[i]],dp[i][j][k]+1);
+					dp[i+1][j][k]=min(dp[i+1][j][k],dp[i][j][k]);
+				}
+			}
+		}
+	}
+	if(dp[N][sum][sum]==1500)cout<<-1<<endl;
+	else cout<<dp[N][sum][sum]<<endl;
 }

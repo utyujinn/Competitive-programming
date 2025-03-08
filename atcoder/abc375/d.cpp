@@ -1,49 +1,34 @@
-#include<bits/stdc++.h>
-#define rep(i, n) for(int i = 0; i < (n); i++)
-#define per(i, n) for(int i = (n) - 1; i >= 0; i--)
-using ll = long long;
-#define vi vector<int>
-#define vvi vector<vi>
-#define vl vector<ll>
-#define vvl vector<vl>
-#define all(a) (a).begin(), (a).end()
-#define rall(a) (a).rbegin(), (a).rend()
+#include<iostream>
+#include<vector>
 using namespace std;
-template<class T, class U>
-bool chmax(T &a, const U &b){ return a < b ? (a = b, 1) : 0; }
-template<class T, class U>
-bool chmin(T &a, const U &b){ return a > b ? (a = b, 1) : 0; }
-const ll inf=1LL<<60;
+vector<int> ldp[26],rdp[26];
 
 int main(void){
-  string s;
-  cin >> s;
-  vl pc(26,-1);
-  vl ppc(26,-1);
-  vl ccnt(26,0);
-  vl csum(26,0);
-  vl psum(26,0);
-  ll n = s.length();
-  ll ans = 0;
-  rep(i,n){
-    int a = s[i]-'A';
-    ll tmp = csum[a];
-    if(pc[a] != -1){
-      if(pc[a]!=i-1){
-        csum[a] += csum[a]+(i-pc[a])*ccnt[a]-1;
-      }
-      else if(ccnt[a]>1){
-        csum[a] += psum[a]+(i-ppc[a])*(ccnt[a]-1)-1;
-      }
-    }
-    ccnt[a]++;
-    ppc[a] = pc[a];
-    pc[a] = i;
-    psum[a] = tmp;
-  }
-  rep(i,26){
-    ans += csum[i];
-  }
-  cout << ans << endl;
-  return 0;
+  string S;cin>>S;
+	int N=S.size();
+	for(int i=0;i<26;i++){
+		ldp[i].assign(N,0);
+		rdp[i].assign(N,0);
+	}
+	ldp[S[0]-'A'][0]++;
+	rdp[S[N-1]-'A'][N-1]++;
+	for(int i=1;i<N;i++){
+		for(int j=0;j<26;j++){
+			ldp[j][i]=ldp[j][i-1];
+		}
+		ldp[S[i]-'A'][i]++;
+	}
+	for(int i=N-2;i>=0;i--){
+		for(int j=0;j<26;j++){
+			rdp[j][i]=rdp[j][i+1];
+		}
+		rdp[S[i]-'A'][i]++;
+	}
+	long ans=0;
+	for(int i=1;i<N-1;i++){
+		for(int j=0;j<26;j++){
+			ans+=(long)ldp[j][i-1]*rdp[j][i+1];
+		}
+	}
+	cout<<ans<<endl;
 }

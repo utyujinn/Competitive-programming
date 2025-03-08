@@ -1,45 +1,40 @@
 #include<iostream>
 #include<vector>
+#include<cmath>
+#include<algorithm>
 using namespace std;
+int N;
+int B[14][1594323];
+int dp[14][1594323];
 
 int main(){
-	int n;
-	cin>>n;
-	int N=1;
-	for(int i=0;i<n;i++){
-		N*=3;
+	cin>>N;
+	for(int i=0;i<(int)pow(3,N);i++){
+		char a;cin>>a;
+		B[0][i]=a-'0';
 	}
-	vector<vector<vector<int>>> list(n+1,vector<vector<int>>(N, vector<int>(2,0)));
 	for(int i=0;i<N;i++){
-		char a;
-		cin>>a;
-		list[0][i][!(a-'0')]=1;
-	}
-	for(int i=1;i<n+1;i++){
-		for(int j=0;j<N/3;j++){
-			int min1=4,min2=4;
-			for(int k=0;k<3;k++){
-				if(min1>list[i-1][j*3+k][0]){
-					min2=min1;
-					min1=list[i-1][j*3+k][0];
-				}else if(min2>list[i-1][j*3+k][0]){
-					min2=list[i-1][j*3+k][0];
-				}
+		for(int j=0;j<(int)pow(3,(N-i-1));j++){
+			int tmp=0;
+			for(int k=j*3;k<j*3+3;k++){
+				tmp+=B[i][k];
 			}
-			list[i][j][0]=min1+min2;
-			min1=4,min2=4;
-			for(int k=0;k<3;k++){
-				if(min1>list[i-1][j*3+k][1]){
-					min2=min1;
-					min1=list[i-1][j*3+k][1];
-				}else if(min2>list[i-1][j*3+k][1]){
-					min2=list[i-1][j*3+k][1];
-				}
-			}
-			list[i][j][1]=min1+min2;
+			B[i+1][j]=(tmp>=2?1:0);
 		}
-		N/=3;
 	}
-	if(list[n][0][0]==0)cout << list[n][0][1] << endl;
-	else cout << list[n][0][0] << endl;
+	if(B[N][0]==1)for(int i=0;i<(int)pow(3,N);i++)B[0][i]^=1;
+	for(int i=0;i<(int)pow(3,N);i++){
+		dp[0][i]=B[0][i]^1;
+	}
+	for(int i=0;i<N;i++){
+		for(int j=0;j<(int)pow(3,(N-i-1));j++){
+			vector<int> list;
+			for(int k=j*3;k<j*3+3;k++){
+				list.push_back(dp[i][k]);
+			}
+			sort(list.begin(),list.end());
+			dp[i+1][j]=list[0]+list[1];
+		}
+	}
+	cout<<dp[N][0]<<endl;
 }

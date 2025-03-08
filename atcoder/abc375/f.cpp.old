@@ -1,0 +1,109 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+using namespace std;
+int N,M,Q;
+int A[5<<14],B[5<<14],C[5<<14];
+vector<int> qu[2<<17];
+bool dis[5<<14];
+vector<pair<int,int>> G[300];
+
+struct UnionFind{
+	int N;
+	vector<int> size, parent;
+	UnionFind(int _n): N(_n),size(_n, 1),parent(_n, -1){}
+	int root(int x){
+		if(parent[x] == -1)return x;
+		else return root(parent[x]);
+	}
+	bool same(int x,int y){
+		return root(x) == root(y);
+	}
+	void unite(int x,int y){
+		if(same(x,y))return;
+		int rx = root(x), ry = root(y);
+		if(size[rx] > size[ry]){
+			parent[ry] = rx;
+			size[rx] += size[ry];
+		}
+		else{
+			parent[rx] = ry;
+			size[ry] += size[rx];
+		}
+		return;
+	}
+	void clear(){
+		for(int i=0;i<N;i++){
+			size[i]=1;
+			parent[i]=-1;
+		}
+	}
+};
+
+int main(){
+	cin>>N>>M>>Q;
+	for(int i=0;i<M;i++){
+		cin>>A[i]>>B[i]>>C[i];
+		A[i]--,B[i]--;
+	}
+	for(int i=0;i<Q;i++){
+		int com;cin>>com;
+		qu[i].push_back(com);
+		if(com==1){
+			int x;cin>>x;
+			x--;
+			qu[i].push_back(x);
+			dis[x]=true;
+		}
+		else{
+			int x,y;cin>>x>>y;
+			x--,y--;
+			qu[i].push_back(x);
+			qu[i].push_back(y);
+		}
+	}
+	UnionFind uf(N);
+	for(int i=0;i<M;i++){
+		if(!dis[i]){
+			G[A[i]].emplace_back(B[i],C[i]);
+			G[B[i]].emplace_back(A[i],C[i]);
+			uf.unite(A[i],B[i]);
+		}
+	}
+	vector<int> ans;
+	for(int i=Q-1;i>=0;i--){
+		if(qu[i][0]==1){
+			int x=qu[i][1];
+			G[A[x]].emplace_back(B[x],C[x]);
+			G[B[x]].emplace_back(A[x],C[x]);
+			uf.unite(A[x],B[x]);
+		}
+		else{
+			int u=qu[i][1],v=qu[i][2];
+			if(!uf.same(u,v)){
+				ans.push_back(-1);
+				continue;
+			}
+			priority_queue<pair<int,int>> q;
+			vector<int> dist(300,~0U>>1);
+			q.emplace(0,u);
+			while(!q.empty()){
+				auto c=q.top();q.pop();
+				int cost=c.first,cv=c.second;
+				if(cost>dist[cv])break;
+				for(auto n:G[cv]){
+					int to=n.first,dis=n.second;
+					if(dist[to]>cost+dis){
+						dist[to]=cost+dis;
+						q.emplace(dist[to],to);
+					}
+				}
+			}
+			if(dist[v]==~0U>>1)ans.push_back(-1);
+			else ans.push_back(dist[v]);
+		}
+	}
+	for(auto it=ans.rbegin();it!=ans.rend();it++){
+		cout<<*it<<endl;
+	}
+}

@@ -1,0 +1,33 @@
+#include<iostream>
+#include<vector>
+#include<map>
+using namespace std;
+int N,M,K;
+vector<int> G[2<<17];
+map<int,int> list[2<<17];
+
+int main(){
+	cin>>N>>M>>K;
+	for(int i=0;i<N;i++){
+		G[i].push_back((i==N-1?0:i+1));
+	}
+	for(int i=0;i<M;i++){
+		int x,y;cin>>x>>y;
+		x--,y--;
+		G[x].push_back(y);
+	}
+	list[0][0]=1;
+	int MOD=998244353;
+	for(int i=1;i<=K;i++){
+		for(auto[c,count]: list[i-1]){
+			for(int n:G[c]){
+				list[i][n]=(list[i][n]+count)%MOD;
+			}
+		}
+	}
+	int ans=0;
+	for(auto[c,count]:list[K]){
+		ans=(ans+count)%MOD;
+	}
+	cout<<ans<<endl;
+}

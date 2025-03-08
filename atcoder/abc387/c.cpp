@@ -1,55 +1,44 @@
 #include<iostream>
+#include<algorithm>
 #include<vector>
-#include<cmath>
 using namespace std;
 
-long hebi(long x){
-	long tmp = x;
-	int digits = 0;
-	while(tmp!=0){
-		digits++;
-		tmp/=10;
+long hebi(long N){
+	long ret=0;
+	vector<int> dig;
+	while(N){
+		dig.push_back(N%10);
+		N/=10;
 	}
-	vector<int> digit(digits);
-	tmp = x;
-	for(int i = digits-1; i >= 0; i--){
-		digit[i] = tmp % 10;
-		tmp /= 10;
-	}
-	long ans = 0;
-
-	int flag = 1;
-	for(int i = 1; i < digits; i++){
-		if(digit[i] >= digit[0])flag = 0;
-	}
-	if(flag)ans++;
-
-	cout << ans << endl;
-
-	for(int i = 1; i < digits; i++){
-		ans += min(digit[0], digit[i]) * pow(digit[0], digits-i-1);
-	}
-
-	cout << ans << endl;
-
-	for(int i = digit[0]-1; i > 0; i--){
-		ans += pow(i, digits-1);
-	}
-
-	cout << ans << endl;
-
-	for(int i = 1; i < digits-1; i++){
-		for(int j = 1; j <= 9; j++){
-			ans += pow(j, i);
+	reverse(dig.begin(),dig.end());
+	for(int i=0;i<dig.size();i++){
+		int f;
+		f=dig[i]-1;
+		for(int j=1;j<=f;j++){
+			long cnt=1;
+			for(int k=i+1;k<dig.size();k++){
+				cnt*=j-1;
+			}
+			ret+=cnt;
+			cout<<cnt<<endl;
 		}
 	}
-
-	cout << ans << endl;
-	return ans;
+	cout<<endl;
+	for(int i=1;i<dig.size();i++){
+		for(int j=1;j<9;j++){
+			long cnt=1;
+			for(int k=i+1;k<dig.size();k++){
+				cnt*=j;
+			}
+			ret=cnt;
+		cout<<cnt<<endl;
+		}
+	}
+	cout<<ret<<endl<<endl;
+	return ret;
 }
 
 int main(){
-	long l,r;
-	cin >> l >> r;
-	cout << hebi(r)-hebi(l-1) << endl;
+	long L,R;cin>>L>>R;
+	cout<<hebi(R)-hebi(L-1)<<endl;
 }

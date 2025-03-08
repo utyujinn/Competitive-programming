@@ -1,0 +1,38 @@
+#include<iostream>
+#include<map>
+using namespace std;
+
+template<typename T>
+struct AA{
+	T n;
+	map<T,T> list;
+	AA(T _n):n(_n){}
+	void set(T k,T v){
+		list[k]=v;
+	}
+	T get(T k){
+		if(list.find(k)==list.end()){
+			return n;
+		}else{
+			return list[k];
+		}
+	}
+};
+
+int main(){
+	map<int,int> A;
+	int Q;
+	cin>>Q;
+	AA<long> aa(0);
+	for(;Q--;){
+		int q;cin>>q;
+		if(q==0){
+			long k,v;cin>>k>>v;
+			aa.set(k,v);
+		}
+		else{
+			long k;cin>>k;
+			cout<<aa.get(k)<<endl;
+		}
+	}
+}
